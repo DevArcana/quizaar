@@ -38,9 +38,12 @@ namespace API.Controllers
         [HttpPost]
         public void Post([FromBody]Question question)
         {
+            var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
+
             var quest = new Question
             {
-                Category = question.Category,
+                CategoryId = category.Id,
+                Category = category,
                 Content = question.Content
             };
 
@@ -56,7 +59,10 @@ namespace API.Controllers
 
             if (quest != null)
             {
-                quest.Category = question.Category;
+                var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
+                // TODO: Investigate if this has to be done like this...
+                quest.Category = category;
+                quest.CategoryId = category.Id;
                 quest.Content = question.Content;
                 _context.Questions.Update(quest);
                 _context.SaveChanges();

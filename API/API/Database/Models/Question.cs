@@ -13,6 +13,7 @@ namespace API.Database.Models
         
         [Required]
         public Category Category { get; set; }
+        public long CategoryId { get; set; }
 
         public ICollection<Answer> Answers { get; set; }
     }
