@@ -12,9 +12,9 @@ namespace API.Database.Models
         public string Content { get; set; }
         
         [Required]
-        public Category Category { get; set; }
+        public virtual Category Category { get; set; }
         public long CategoryId { get; set; }
 
-        public ICollection<Answer> Answers { get; set; }
+        public virtual ICollection<Answer> Answers { get; set; }
     }
 }

@@ -10,6 +10,6 @@ namespace API.Database.Models
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<QuizQuestion> Questions { get; set; }
+        public virtual ICollection<QuizQuestion> Questions { get; set; }
     }
 }

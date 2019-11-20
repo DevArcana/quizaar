@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Database;
 using API.Database.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,9 +23,9 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public IEnumerable<Category> Get()
+        public IEnumerable<CategoryDTO> Get()
         {
-            return _context.Categories;
+            return _context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c));
         }
 
         // GET api/<controller>/5

@@ -12,8 +12,8 @@ namespace API.Database.Models
         public string Content { get; set; }
 
         [Required]
-        public Quiz Quiz { get; set; }
+        public virtual Quiz Quiz { get; set; }
 
-        public ICollection<QuizAnswer> Answers { get; set; }
+        public virtual ICollection<QuizAnswer> Answers { get; set; }
     }
 }

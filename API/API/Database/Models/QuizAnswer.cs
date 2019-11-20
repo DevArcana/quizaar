@@ -13,6 +13,6 @@ namespace API.Database.Models
         public bool IsCorrect { get; set; }
 
         [Required]
-        public QuizQuestion Question { get; set; }
+        public virtual QuizQuestion Question { get; set; }
     }
 }
