@@ -23,22 +23,30 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public IEnumerable<CategoryDTO> Get()
+        public IEnumerable<ICategoryDTO> Get(bool shallow)
         {
-            return _context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c));
+            if (shallow)
+                return _context.Categories.Select(c => new CategoryShallowDTO(c));
+            else
+                return _context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public Category Get(long id)
+        public ICategoryDTO Get(long id, bool shallow)
         {
-            return _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+            if (shallow)
+                return _context.Categories.Where(x => x.Id == id).Select(c => new CategoryShallowDTO(c)).FirstOrDefault();
+            else
+                return _context.Categories.Where(x => x.Id == id).Include(c => c.Questions).Select(c => new CategoryDTO(c)).FirstOrDefault();
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]Category category)
+        public void Post([FromBody]CategoryShallowDTO category)
         {
+            // TODO: Implement null checks
+
             var cat = new Category
             {
                 Name = category.Name
@@ -50,14 +58,15 @@ namespace API.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(long id, [FromBody]Category category)
+        public void Put(long id, [FromBody]CategoryShallowDTO category)
         {
+            // TODO: Implement validation
             var cat = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
 
             if (category != null)
             {
-                category.Name = category.Name;
-                _context.Categories.Update(category);
+                cat.Name = category.Name;
+                _context.Categories.Update(cat);
                 _context.SaveChanges();
             }
         }

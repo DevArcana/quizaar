@@ -13,7 +13,23 @@ namespace API.Database.Models
         public virtual IEnumerable<Question> Questions { get; set; }
     }
 
-    public class CategoryDTO
+    public interface ICategoryDTO { }
+
+    public class CategoryShallowDTO : ICategoryDTO
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+
+        public CategoryShallowDTO() { }
+
+        public CategoryShallowDTO(Category category)
+        {
+            Id = category.Id;
+            Name = category.Name;
+        }
+    }
+
+    public class CategoryDTO : ICategoryDTO
     {
         public class QuestionWrapper
         {
