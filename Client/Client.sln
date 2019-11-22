@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuizaarDesktopUI", "Client\QuizaarDesktopUI.csproj", "{87E428F8-2800-472F-91B6-BBAD70682FE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuizaarDesktopUI", "QuizaarDesktopUI\QuizaarDesktopUI.csproj", "{87E428F8-2800-472F-91B6-BBAD70682FE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
