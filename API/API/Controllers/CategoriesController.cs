@@ -98,7 +98,7 @@ namespace API.Controllers
 
             if (category != null)
             {
-                if (category.Questions != null && category.Questions.Count() != 0)
+                if (category.Questions != null && category.Questions.Count() != 0 && !force)
                 {
                     // TODO: Figure out better status codes
                     // TODO: Implement cascade delete

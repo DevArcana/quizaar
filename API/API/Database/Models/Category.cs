@@ -46,7 +46,7 @@ namespace API.Database.Models
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public virtual IEnumerable<QuestionWrapper> Questions { get; set; }
+        public IEnumerable<QuestionWrapper> Questions { get; set; }
 
         public CategoryDTO(Category category)
         {

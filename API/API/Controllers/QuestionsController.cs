@@ -23,21 +23,41 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public ActionResult<IEnumerable<Question>> Get()
+        public ActionResult<IEnumerable<IQuestionDTO>> Get(bool shallow)
         {
-            return Ok(_context.Questions);
+            if (shallow)
+                return Ok(_context.Questions
+                    .Include(q => q.Category)
+                    .Select(q => new QuestionShallowDTO(q)));
+            else
+                return Ok(_context.Questions
+                    .Include(q => q.Answers)
+                    .Include(q => q.Category)
+                    .Select(q => new QuestionDTO(q)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public ActionResult<Question> Get(long id)
+        public ActionResult<IQuestionDTO> Get(long id, bool shallow)
         {
-            return Ok(_context.Questions.Where(x => x.Id == id).FirstOrDefault());
+            if (shallow)
+                return Ok(_context.Questions
+                    .Include(q => q.Category)
+                    .Select(q => new QuestionShallowDTO(q))
+                    .Where(x => x.Id == id)
+                    .FirstOrDefault());
+            else
+                return Ok(_context.Questions
+                    .Include(q => q.Answers)
+                    .Include(q => q.Category)
+                    .Select(q => new QuestionDTO(q))
+                    .Where(x => x.Id == id)
+                    .FirstOrDefault());
         }
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]Question question)
+        public ActionResult Post([FromBody]CreateQuestionForm question)
         {
             if (question.Content == null || question.Content == "") return BadRequest();
 
@@ -62,7 +82,7 @@ namespace API.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public ActionResult Put(long id, [FromBody]Question question)
+        public ActionResult Put(long id, [FromBody]CreateQuestionForm question)
         {
             if (question.Content == null || question.Content == "") return BadRequest();
 
@@ -101,7 +121,7 @@ namespace API.Controllers
 
             if (question != null)
             {
-                if (question.Answers != null && question.Answers.Count != 0 && !force)
+                if (question.Answers != null && question.Answers.Count() != 0 && !force)
                 {
                     return BadRequest();
                 }
