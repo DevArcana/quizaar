@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class CategoriesController : Controller
     {
         protected readonly AppDbContext _context;
@@ -23,29 +23,36 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public IEnumerable<ICategoryDTO> Get(bool shallow)
+        public ActionResult<IEnumerable<ICategoryDTO>> Get(bool shallow)
         {
             if (shallow)
-                return _context.Categories.Select(c => new CategoryShallowDTO(c));
+                return Ok(_context.Categories.Select(c => new CategoryShallowDTO(c)));
             else
-                return _context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c));
+                return Ok(_context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public ICategoryDTO Get(long id, bool shallow)
+        public ActionResult<ICategoryDTO> Get(long id, bool shallow)
         {
             if (shallow)
-                return _context.Categories.Where(x => x.Id == id).Select(c => new CategoryShallowDTO(c)).FirstOrDefault();
+                return Ok(_context.Categories
+                    .Where(x => x.Id == id)
+                    .Select(c => new CategoryShallowDTO(c))
+                    .FirstOrDefault());
             else
-                return _context.Categories.Where(x => x.Id == id).Include(c => c.Questions).Select(c => new CategoryDTO(c)).FirstOrDefault();
+                return Ok(_context.Categories
+                    .Where(x => x.Id == id)
+                    .Include(c => c.Questions)
+                    .Select(c => new CategoryDTO(c))
+                    .FirstOrDefault());
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]CategoryShallowDTO category)
+        public ActionResult Post([FromBody]CategoryShallowDTO category)
         {
-            // TODO: Implement null checks
+            if (category.Name == null) return BadRequest();
 
             var cat = new Category
             {
@@ -54,26 +61,35 @@ namespace API.Controllers
 
             _context.Categories.Add(cat);
             _context.SaveChanges();
+
+            return Ok();
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(long id, [FromBody]CategoryShallowDTO category)
+        public ActionResult Put(long id, [FromBody]CategoryShallowDTO category)
         {
-            // TODO: Implement validation
+            if (category.Name == null) return BadRequest();
+
             var cat = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
 
-            if (category != null)
+            if (cat != null)
             {
                 cat.Name = category.Name;
                 _context.Categories.Update(cat);
                 _context.SaveChanges();
+
+                return Ok();
+            }
+            else
+            {
+                return NoContent();
             }
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(long id)
+        public ActionResult Delete(long id)
         {
             var category = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
 
@@ -81,6 +97,12 @@ namespace API.Controllers
             {
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
+
+                return Ok();
+            }
+            else
+            {
+                return NoContent();
             }
         }
     }
