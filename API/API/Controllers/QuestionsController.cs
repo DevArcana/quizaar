@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using API.Database;
 using API.Database.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class QuestionsController : Controller
     {
         protected readonly AppDbContext _context;
@@ -22,63 +23,96 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public IEnumerable<Question> Get()
+        public ActionResult<IEnumerable<Question>> Get()
         {
-            return _context.Questions;
+            return Ok(_context.Questions);
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public Question Get(long id)
+        public ActionResult<Question> Get(long id)
         {
-            return _context.Questions.Where(x => x.Id == id).FirstOrDefault();
+            return Ok(_context.Questions.Where(x => x.Id == id).FirstOrDefault());
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]Question question)
+        public ActionResult Post([FromBody]Question question)
         {
+            if (question.Content == null || question.Content == "") return BadRequest();
+
             var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
+
+            if (category == null)
+            {
+                return BadRequest();
+            }
 
             var quest = new Question
             {
-                CategoryId = category.Id,
                 Category = category,
                 Content = question.Content
             };
 
             _context.Questions.Add(quest);
             _context.SaveChanges();
+
+            return Ok();
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(long id, [FromBody]Question question)
+        public ActionResult Put(long id, [FromBody]Question question)
         {
+            if (question.Content == null || question.Content == "") return BadRequest();
+
             var quest = _context.Questions.Where(x => x.Id == id).FirstOrDefault();
 
             if (quest != null)
             {
                 var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
-                // TODO: Investigate if this has to be done like this...
+                
+                if (category == null)
+                {
+                    return BadRequest();
+                }
+
                 quest.Category = category;
-                quest.CategoryId = category.Id;
                 quest.Content = question.Content;
                 _context.Questions.Update(quest);
                 _context.SaveChanges();
+
+                return Ok();
+            }
+            else
+            {
+                return NoContent();
             }
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(long id)
+        public ActionResult Delete(long id, bool force)
         {
-            var question = _context.Questions.Where(x => x.Id == id).FirstOrDefault();
+            var question = _context.Questions
+                .Include(q => q.Answers)
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
 
             if (question != null)
             {
+                if (question.Answers != null && question.Answers.Count != 0 && !force)
+                {
+                    return BadRequest();
+                }
+
                 _context.Questions.Remove(question);
                 _context.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return NoContent();
             }
         }
     }

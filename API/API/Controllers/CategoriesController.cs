@@ -52,7 +52,7 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]CategoryShallowDTO category)
         {
-            if (category.Name == null) return BadRequest();
+            if (category.Name == null || category.Name == "") return BadRequest();
 
             var cat = new Category
             {
@@ -69,7 +69,7 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public ActionResult Put(long id, [FromBody]CategoryShallowDTO category)
         {
-            if (category.Name == null) return BadRequest();
+            if (category.Name == null || category.Name == "") return BadRequest();
 
             var cat = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
 
@@ -89,12 +89,22 @@ namespace API.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(long id)
+        public ActionResult Delete(long id, bool force)
         {
-            var category = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+            var category = _context.Categories
+                .Include(c => c.Questions)
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
 
             if (category != null)
             {
+                if (category.Questions != null && category.Questions.Count() != 0)
+                {
+                    // TODO: Figure out better status codes
+                    // TODO: Implement cascade delete
+                    return BadRequest();
+                }
+
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
 
