@@ -101,7 +101,6 @@ namespace API.Controllers
                 if (category.Questions != null && category.Questions.Count() != 0 && !force)
                 {
                     // TODO: Figure out better status codes
-                    // TODO: Implement cascade delete
                     return BadRequest();
                 }
 
