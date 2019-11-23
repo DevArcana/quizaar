@@ -6,7 +6,20 @@
         xmlns:local="clr-namespace:QuizaarDesktopUI.Views"
         mc:Ignorable="d"
         Title="ShellView" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" FontSize="18">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="ExitApplication" Header="E_xit"/>
+            </MenuItem>
+            <MenuItem Header="_Questions">
+                <MenuItem x:Name="ShowQuestionsView" Header="_Show view"/>
+            </MenuItem>
+            <MenuItem Header="_Categories">
+                <MenuItem x:Name="ShowCategoriesView" Header="_Show view"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <ContentControl x:Name="ActiveItem" Padding="10"/>
+        </Grid>
+    </DockPanel>
 </Window>

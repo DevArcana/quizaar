@@ -15,4 +15,8 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\QuizaarDesktopUI.Library\QuizaarDesktopUI.Library.csproj" />
+  </ItemGroup>
+
 </Project>

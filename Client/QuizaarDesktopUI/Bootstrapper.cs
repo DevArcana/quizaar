@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Caliburn.Micro;
+using QuizaarDesktopUI.Library.Services;
 using QuizaarDesktopUI.ViewModels;
 
 namespace QuizaarDesktopUI
@@ -25,7 +26,8 @@ namespace QuizaarDesktopUI
 
             _container
                 .Singleton<IWindowManager, WindowManager>()
-                .Singleton<IEventAggregator, EventAggregator>();
+                .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<IApiClient, ApiClient>();
 
             //var stopwatch = Stopwatch.StartNew();
 
