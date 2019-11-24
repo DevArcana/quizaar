@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace QuizaarDesktopUI.Views
 {
     /// <summary>
-    /// Interaction logic for CategoriesView.xaml
+    /// Interaction logic for CategoriesShowView.xaml
     /// </summary>
-    public partial class CategoriesView : UserControl
+    public partial class CategoriesShowView : UserControl
     {
-        public CategoriesView()
+        public CategoriesShowView()
         {
             InitializeComponent();
         }

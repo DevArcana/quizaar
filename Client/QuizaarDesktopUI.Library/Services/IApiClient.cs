@@ -7,6 +7,9 @@ namespace QuizaarDesktopUI.Library.Services
     public interface IApiClient
     {
         Task<List<CategoryShallowDTO>> GetShallowCategories();
-        Task<bool> PostCategory(CategoryShallowDTO category);
+        Task<List<CategoryDTO>> GetFullCategories();
+        Task<IEnumerable<ICategoryDTO>> GetCategories(bool shallow);
+        Task PostCategory(CategoryShallowDTO category);
+        // Task PostDummyQuestions();
     }
 }

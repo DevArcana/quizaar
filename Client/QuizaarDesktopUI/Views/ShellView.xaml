@@ -12,10 +12,12 @@
                 <MenuItem x:Name="ExitApplication" Header="E_xit"/>
             </MenuItem>
             <MenuItem Header="_Questions">
-                <MenuItem x:Name="ShowQuestionsView" Header="_Show view"/>
+                <MenuItem x:Name="ShowQuestionsShowView" Header="_Show"/>
+                <MenuItem x:Name="ShowQuestionsAddView" Header="_Add"/>
             </MenuItem>
             <MenuItem Header="_Categories">
-                <MenuItem x:Name="ShowCategoriesView" Header="_Show view"/>
+                <MenuItem x:Name="ShowCategoriesShowView" Header="_Show"/>
+                <MenuItem x:Name="ShowCategoriesAddView" Header="_Add"/>
             </MenuItem>
         </Menu>
         <Grid>

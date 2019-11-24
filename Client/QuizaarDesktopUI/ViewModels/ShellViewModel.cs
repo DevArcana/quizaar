@@ -8,12 +8,12 @@ namespace QuizaarDesktopUI.ViewModels
 {
     public class ShellViewModel : Conductor<object>
     {
-        private CategoriesViewModel _categoriesVM;
+        private CategoriesShowViewModel _categoriesSVM;
 
-        public ShellViewModel(CategoriesViewModel categoriesVM)
+        public ShellViewModel(CategoriesShowViewModel categoriesSVM)
         {
-            _categoriesVM = categoriesVM;
-            ActivateItemAsync(_categoriesVM, new CancellationToken());
+            _categoriesSVM = categoriesSVM;
+            ActivateItemAsync(_categoriesSVM, new CancellationToken());
         }
 
         public void ExitApplication()
