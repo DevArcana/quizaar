@@ -43,7 +43,7 @@ namespace API.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]CategoryShallowDTO category)
+        public ActionResult<CategoryShallowDTO> Post([FromBody]CategoryShallowDTO category)
         {
             if (category.Name == null || category.Name == "") return BadRequest();
 
@@ -55,12 +55,12 @@ namespace API.Controllers
             _context.Categories.Add(cat);
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new CategoryShallowDTO(cat));
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public ActionResult Put(long id, [FromBody]CategoryShallowDTO category)
+        public ActionResult<CategoryShallowDTO> Put(long id, [FromBody]CategoryShallowDTO category)
         {
             if (category.Name == null || category.Name == "") return BadRequest();
 
@@ -72,7 +72,7 @@ namespace API.Controllers
                 _context.Categories.Update(cat);
                 _context.SaveChanges();
 
-                return Ok();
+                return Ok(new CategoryShallowDTO(cat));
             }
             else
             {

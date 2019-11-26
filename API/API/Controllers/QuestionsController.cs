@@ -44,7 +44,7 @@ namespace API.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]CreateQuestionForm question)
+        public ActionResult<QuestionShallowDTO> Post([FromBody]CreateQuestionForm question)
         {
             if (question.Content == null || question.Content == "") return BadRequest();
 
@@ -64,12 +64,12 @@ namespace API.Controllers
             _context.Questions.Add(quest);
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new QuestionShallowDTO(quest));
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public ActionResult Put(long id, [FromBody]CreateQuestionForm question)
+        public ActionResult<QuestionShallowDTO> Put(long id, [FromBody]CreateQuestionForm question)
         {
             if (question.Content == null || question.Content == "") return BadRequest();
 
@@ -89,7 +89,7 @@ namespace API.Controllers
                 _context.Questions.Update(quest);
                 _context.SaveChanges();
 
-                return Ok();
+                return Ok(new QuestionShallowDTO(quest));
             }
             else
             {
