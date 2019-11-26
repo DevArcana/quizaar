@@ -23,29 +23,22 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public ActionResult<IEnumerable<ICategoryDTO>> Get(bool shallow)
+        public ActionResult<IEnumerable<CategoryShallowDTO>> Get()
         {
-            if (shallow)
-                return Ok(_context.Categories.Select(c => new CategoryShallowDTO(c)));
-            else
-                return Ok(_context.Categories.Include(c => c.Questions).Select(c => new CategoryDTO(c)));
+            return Ok(_context.Categories
+                .Include(c => c.Questions)
+                .Select(c => new CategoryShallowDTO(c)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public ActionResult<ICategoryDTO> Get(long id, bool shallow)
+        public ActionResult<CategoryDTO> Get(long id)
         {
-            if (shallow)
-                return Ok(_context.Categories
-                    .Where(x => x.Id == id)
-                    .Select(c => new CategoryShallowDTO(c))
-                    .FirstOrDefault());
-            else
-                return Ok(_context.Categories
-                    .Where(x => x.Id == id)
-                    .Include(c => c.Questions)
-                    .Select(c => new CategoryDTO(c))
-                    .FirstOrDefault());
+            return Ok(_context.Categories
+                .Where(x => x.Id == id)
+                .Include(c => c.Questions)
+                .Select(c => new CategoryDTO(c))
+                .FirstOrDefault());
         }
 
         // POST api/<controller>

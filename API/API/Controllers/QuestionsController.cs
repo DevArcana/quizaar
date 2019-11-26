@@ -23,36 +23,23 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public ActionResult<IEnumerable<IQuestionDTO>> Get(bool shallow)
+        public ActionResult<IEnumerable<QuestionShallowDTO>> Get()
         {
-            if (shallow)
-                return Ok(_context.Questions
-                    .Include(q => q.Category)
-                    .Select(q => new QuestionShallowDTO(q)));
-            else
-                return Ok(_context.Questions
-                    .Include(q => q.Answers)
-                    .Include(q => q.Category)
-                    .Select(q => new QuestionDTO(q)));
+            return Ok(_context.Questions
+                .Include(q => q.Category)
+                .Select(q => new QuestionShallowDTO(q)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public ActionResult<IQuestionDTO> Get(long id, bool shallow)
+        public ActionResult<QuestionDTO> Get(long id)
         {
-            if (shallow)
-                return Ok(_context.Questions
-                    .Include(q => q.Category)
-                    .Select(q => new QuestionShallowDTO(q))
-                    .Where(x => x.Id == id)
-                    .FirstOrDefault());
-            else
-                return Ok(_context.Questions
-                    .Include(q => q.Answers)
-                    .Include(q => q.Category)
-                    .Select(q => new QuestionDTO(q))
-                    .Where(x => x.Id == id)
-                    .FirstOrDefault());
+            return Ok(_context.Questions
+                .Where(x => x.Id == id)
+                .Include(q => q.Answers)
+                .Include(q => q.Category)
+                .Select(q => new QuestionDTO(q))
+                .FirstOrDefault());
         }
 
         // POST api/<controller>

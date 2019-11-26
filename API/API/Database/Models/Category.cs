@@ -13,9 +13,7 @@ namespace API.Database.Models
         public virtual IEnumerable<Question> Questions { get; set; }
     }
 
-    public interface ICategoryDTO { }
-
-    public class CategoryShallowDTO : ICategoryDTO
+    public class CategoryShallowDTO
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -29,7 +27,7 @@ namespace API.Database.Models
         }
     }
 
-    public class CategoryDTO : ICategoryDTO
+    public class CategoryDTO : CategoryShallowDTO
     {
         public class QuestionWrapper
         {
@@ -43,15 +41,10 @@ namespace API.Database.Models
             }
         }
 
-        public long Id { get; set; }
-        public string Name { get; set; }
-
         public IEnumerable<QuestionWrapper> Questions { get; set; }
 
-        public CategoryDTO(Category category)
+        public CategoryDTO(Category category) : base(category)
         {
-            Id = category.Id;
-            Name = category.Name;
             Questions = category.Questions.Select(q => new QuestionWrapper(q));
         }
     }

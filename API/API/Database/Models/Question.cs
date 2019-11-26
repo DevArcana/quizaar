@@ -17,9 +17,7 @@ namespace API.Database.Models
         public virtual IEnumerable<Answer> Answers { get; set; }
     }
 
-    public interface IQuestionDTO { }
-
-    public class QuestionShallowDTO : IQuestionDTO
+    public class QuestionShallowDTO
     {
         public long Id { get; set; }
         public string Content { get; set; }
@@ -35,7 +33,7 @@ namespace API.Database.Models
         }
     }
 
-    public class QuestionDTO : IQuestionDTO
+    public class QuestionDTO : QuestionShallowDTO
     {
         public class AnswerWrapper
         {
@@ -51,14 +49,9 @@ namespace API.Database.Models
             }
         }
 
-        public long Id { get; set; }
-        public string Content { get; set; }
-
-        public CategoryShallowDTO Category { get; set; }
-
         public IEnumerable<AnswerWrapper> Answers { get; set; }
 
-        public QuestionDTO(Question question)
+        public QuestionDTO(Question question) : base(question)
         {
             Id = question.Id;
             Content = question.Content;
