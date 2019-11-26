@@ -48,4 +48,9 @@ namespace API.Database.Models
             Questions = category.Questions.Select(q => new QuestionWrapper(q));
         }
     }
+
+    public class CreateCategoryForm
+    {
+        public string Name { get; set; }
+    }
 }
