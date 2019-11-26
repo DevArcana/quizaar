@@ -43,7 +43,7 @@ namespace API.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]CreateAnswerForm answerForm)
+        public ActionResult<AnswerDTO> Post([FromBody]CreateAnswerForm answerForm)
         {
             if (answerForm == null) return BadRequest();
             if (answerForm.Content == null || answerForm.Content == "") return BadRequest();
@@ -62,12 +62,12 @@ namespace API.Controllers
             _context.Answers.Add(answer);
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new AnswerDTO(answer));
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public ActionResult Put(long id, [FromBody]CreateAnswerForm answerForm)
+        public ActionResult<AnswerDTO> Put(long id, [FromBody]CreateAnswerForm answerForm)
         {
             if (answerForm == null) return BadRequest();
             if (answerForm.Content == null || answerForm.Content == "") return BadRequest();
@@ -87,7 +87,7 @@ namespace API.Controllers
             _context.Answers.Update(answer);
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new AnswerDTO(answer));
         }
 
         // DELETE api/<controller>/5
