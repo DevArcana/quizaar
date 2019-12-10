@@ -44,7 +44,6 @@ namespace QuizaarDesktopUI.ViewModels
             //var categoryList = await _apiClient.GetFullCategories();
             //Categories = new BindingList<CategoryDTO>(categoryList);
             //ShallowLoaded = false;
-            await _apiClient.PostDummyQuestions();
         }
 
         private IEnumerable<ICategoryDTO> _categories;
