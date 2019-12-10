@@ -1,4 +1,4 @@
-name: API [ASP.NET Core] CI
+name: Client [.NET Core] CI
 
 on: [push]
 
