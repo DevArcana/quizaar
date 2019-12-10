@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build with dotnet
-      run: dotnet build ./Client/Client.sln --configuration Release
+      run: dotnet build ./Client/Client.sln --configuration Release --source https://www.myget.org/F/caliburn-micro-builds/api/v3/index.json
     - name: Test with dotnet
       run: dotnet test ./Client/Client.sln --configuration Release
