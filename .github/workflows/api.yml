@@ -16,6 +16,6 @@ jobs:
       if: matrix.os == 'macOS-latest' || matrix.os == 'ubuntu-latest'
     - uses: actions/checkout@v1
     - name: Build with dotnet
-      run: dotnet build ./API/Solution.sln --configuration Release
+      run: dotnet build ./API/API.sln --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./API/Solution.sln --configuration Release
+      run: dotnet test ./API/API.sln --configuration Release
