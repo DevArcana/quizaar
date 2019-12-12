@@ -12,4 +12,17 @@ namespace API.Database.Models
 
         public virtual ICollection<QuizQuestion> Questions { get; set; }
     }
+
+    public class CreateQuizForm
+    {
+        public class Question
+        {
+            public long Id { get; set; }
+            public long[] Answers { get; set; }
+        }
+
+        public string Name { get; set; }
+
+        public Question[] Questions { get; set; }
+    }
 }

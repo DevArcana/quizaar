@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using API.Database;
 using API.Database.Models;
@@ -35,6 +36,47 @@ namespace API.Controllers
                 .Include(c => c.Questions)
                 .Select(c => new CategoryDTO(c))
                 .FirstOrDefault());
+        }
+
+        // GET api/<controller>/5
+        [HttpGet("{id}/generate")]
+        public ActionResult<CreateQuizForm> GetQuizTemplate(long id)
+        {
+            var category = _context.Categories
+                .Where(x => x.Id == id)
+                .Include(c => c.Questions)
+                .ThenInclude(q => q.Answers)
+                .FirstOrDefault();
+
+            if (category == null) return NoContent();
+
+            var questions = 6;
+            var answers = 4;
+
+            var rnd = new Random();
+
+            var quizForm = new CreateQuizForm
+            {
+                Name = "Example Quiz",
+                Questions = category.Questions
+                    .OrderBy(x => rnd.Next())
+                    .Take(questions)
+                    .Select(x => new CreateQuizForm.Question
+                    {
+                        Id = x.Id,
+                        Answers = x.Answers
+                            .Where(x => !x.IsCorrect)
+                            .OrderBy(x => rnd.Next())
+                            .Take(answers)
+                            .Append(x.Answers.OrderBy(x => rnd.Next()).Where(x => x.IsCorrect).FirstOrDefault())
+                            .Select(x => x.Id)
+                            .ToArray()
+
+                    })
+                    .ToArray()
+            };
+
+            return Ok(null);
         }
 
         // POST api/<controller>
