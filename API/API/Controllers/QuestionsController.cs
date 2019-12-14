@@ -10,7 +10,7 @@ namespace API.Controllers
     [Route("api/v1/[controller]")]
     public class QuestionsController : Controller
     {
-        protected readonly AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public QuestionsController(AppDbContext context)
         {
@@ -42,9 +42,9 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult<QuestionShallowDTO> Post([FromBody]CreateQuestionForm question)
         {
-            if (question.Content == null || question.Content == "") return BadRequest();
+            if (string.IsNullOrEmpty(question.Content)) return BadRequest();
 
-            var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
+            var category = _context.Categories.FirstOrDefault(x => x.Id == question.CategoryId);
 
             if (category == null)
             {
@@ -67,13 +67,13 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public ActionResult<QuestionShallowDTO> Put(long id, [FromBody]CreateQuestionForm question)
         {
-            if (question.Content == null || question.Content == "") return BadRequest();
+            if (string.IsNullOrEmpty(question.Content)) return BadRequest();
 
-            var quest = _context.Questions.Where(x => x.Id == id).FirstOrDefault();
+            var quest = _context.Questions.FirstOrDefault(x => x.Id == id);
 
             if (quest != null)
             {
-                var category = _context.Categories.Where(x => x.Id == question.CategoryId).FirstOrDefault();
+                var category = _context.Categories.FirstOrDefault(x => x.Id == question.CategoryId);
                 
                 if (category == null)
                 {
@@ -99,8 +99,7 @@ namespace API.Controllers
         {
             var question = _context.Questions
                 .Include(q => q.Answers)
-                .Where(x => x.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.Id == id);
 
             if (question != null)
             {

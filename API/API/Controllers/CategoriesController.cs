@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using API.Database;
 using API.Database.Models;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,13 @@ namespace API.Controllers
     [Route("api/v1/[controller]")]
     public class CategoriesController : Controller
     {
-        protected readonly AppDbContext _context;
+        private readonly AppDbContext _context;
+        private readonly IQuizService _quizService;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context, IQuizService quizService)
         {
             _context = context;
+            _quizService = quizService;
         }
 
         // GET: api/<controller>
@@ -40,50 +43,16 @@ namespace API.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}/generate")]
-        public ActionResult<CreateQuizForm> GetQuizTemplate(long id)
+        public ActionResult<CreateQuizForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
         {
-            var category = _context.Categories
-                .Where(x => x.Id == id)
-                .Include(c => c.Questions)
-                .ThenInclude(q => q.Answers)
-                .FirstOrDefault();
-
-            if (category == null) return NoContent();
-
-            var questions = 6;
-            var answers = 4;
-
-            var rnd = new Random();
-
-            var quizForm = new CreateQuizForm
-            {
-                Name = "Example Quiz",
-                Questions = category.Questions
-                    .OrderBy(x => rnd.Next())
-                    .Take(questions)
-                    .Select(x => new CreateQuizForm.Question
-                    {
-                        Id = x.Id,
-                        Answers = x.Answers
-                            .Where(x => !x.IsCorrect)
-                            .OrderBy(x => rnd.Next())
-                            .Take(answers)
-                            .Append(x.Answers.OrderBy(x => rnd.Next()).Where(x => x.IsCorrect).FirstOrDefault())
-                            .Select(x => x.Id)
-                            .ToArray()
-
-                    })
-                    .ToArray()
-            };
-
-            return Ok(null);
+            return Ok(_quizService.GenerateQuizFromCategory(id, questionsCount, answersPerQuestion, quizName));
         }
 
         // POST api/<controller>
         [HttpPost]
         public ActionResult<CategoryShallowDTO> Post([FromBody]CreateCategoryForm category)
         {
-            if (category.Name == null || category.Name == "") return BadRequest();
+            if (string.IsNullOrEmpty(category.Name)) return BadRequest();
 
             var cat = new Category
             {
@@ -100,9 +69,9 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public ActionResult<CategoryShallowDTO> Put(long id, [FromBody]CreateCategoryForm category)
         {
-            if (category.Name == null || category.Name == "") return BadRequest();
+            if (string.IsNullOrEmpty(category.Name)) return BadRequest();
 
-            var cat = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+            var cat = _context.Categories.FirstOrDefault(x => x.Id == id);
 
             if (cat != null)
             {
@@ -124,8 +93,7 @@ namespace API.Controllers
         {
             var category = _context.Categories
                 .Include(c => c.Questions)
-                .Where(x => x.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.Id == id);
 
             if (category != null)
             {
