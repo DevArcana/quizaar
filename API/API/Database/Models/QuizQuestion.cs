@@ -12,8 +12,23 @@ namespace API.Database.Models
         public string Content { get; set; }
 
         [Required]
-        public virtual Quiz Quiz { get; set; }
+        public virtual QuizTemplate Quiz { get; set; }
 
         public virtual ICollection<QuizAnswer> Answers { get; set; }
+    }
+
+    public class QuizQuestionDTO
+    {
+        public long Id { get; set; }
+        public string Content { get; set; }
+
+        public IEnumerable<QuizAnswerDTO> Answers { get; set; }
+
+        public QuizQuestionDTO(QuizQuestion quizQuestion)
+        {
+            Id = quizQuestion.Id;
+            Content = quizQuestion.Content;
+            Answers = quizQuestion.Answers.Select(x => new QuizAnswerDTO(x));
+        }
     }
 }

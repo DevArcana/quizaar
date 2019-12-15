@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Database;
 using API.Database.Models;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,33 +12,45 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class QuizesController : Controller
     {
-        protected readonly AppDbContext _context;
-        public QuizesController(AppDbContext context)
+        private readonly AppDbContext _context;
+        private readonly IQuizService _quizService;
+
+        public QuizesController(AppDbContext context, IQuizService quizService)
         {
             _context = context;
+            _quizService = quizService;
         }
 
         // GET: api/<controller>
         [HttpGet]
-        public ActionResult<IEnumerable<Quiz>> Get()
+        public ActionResult<IEnumerable<QuizTemplate>> Get()
         {
-            return Ok(_context.Quizes);
+            return Ok(_context.Quizes
+                .Include(x => x.Questions)
+                .ThenInclude(x => x.Answers)
+                .Select(x => new QuizTemplateDTO(x)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult<QuizTemplate> Get(long id)
         {
-            return "value";
+            return Ok(_context.Quizes
+                .Include(x => x.Questions)
+                .ThenInclude(x => x.Answers)
+                .Select(x => new QuizTemplateDTO(x))
+                .FirstOrDefault(x => x.Id == id));
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public ActionResult Post([FromBody]CreateQuizForm form)
         {
+            _quizService.CreateNewQuizTemplate(form);
+            return Ok();
         }
 
         // PUT api/<controller>/5

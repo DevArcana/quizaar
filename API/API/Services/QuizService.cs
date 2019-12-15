@@ -10,7 +10,9 @@ namespace API.Services
 {
     public interface IQuizService
     {
-        CreateQuizForm GenerateQuizFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName);
+        CreateQuizForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName);
+        QuizTemplate CreateNewQuizTemplate(CreateQuizForm form);
+        bool DeleteQuizTemplate(long id);
     }
 
     public class QuizService : IQuizService
@@ -47,14 +49,14 @@ namespace API.Services
                 return new CreateQuizForm.Question
                 {
                     Id = x.Id,
-                    Answers = badAnswers.Append(goodAnswer).OrderBy(x => Guid.NewGuid()).ToArray()
+                    Answers = badAnswers.Append(goodAnswer).OrderBy(x => Guid.NewGuid()).ToList()
                 };
             }).ToArray();
 
             return result;
         }
 
-        public CreateQuizForm GenerateQuizFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName)
+        public CreateQuizForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName)
         {
             var category = _context.Categories
                 .Include(x => x.Questions)
@@ -76,6 +78,45 @@ namespace API.Services
             };
 
             return form;
+        }
+
+        public QuizTemplate CreateNewQuizTemplate(CreateQuizForm form)
+        {
+            var template = new QuizTemplate
+            {
+                Name = form.Name,
+                Questions = form.Questions.Select(x =>
+                {
+                    var question = _context.Questions
+                        .Include(x => x.Answers)
+                        .FirstOrDefault(q => q.Id == x.Id);
+
+                    return new QuizQuestion
+                    {
+                        Content = question.Content,
+                        Answers = x.Answers.Select(x =>
+                        {
+                            var answer = question.Answers.FirstOrDefault(a => a.Id == x);
+
+                            return new QuizAnswer
+                            {
+                                Content = answer.Content,
+                                IsCorrect = answer.IsCorrect
+                            };
+                        }).ToList()
+                    };
+                }).ToList()
+            };
+
+            _context.Quizes.Add(template);
+            _context.SaveChanges();
+
+            return template;
+        }
+
+        public bool DeleteQuizTemplate(long id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

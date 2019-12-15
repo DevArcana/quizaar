@@ -45,7 +45,7 @@ namespace API.Controllers
         [HttpGet("{id}/generate")]
         public ActionResult<CreateQuizForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
         {
-            return Ok(_quizService.GenerateQuizFromCategory(id, questionsCount, answersPerQuestion, quizName));
+            return Ok(_quizService.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
         }
 
         // POST api/<controller>

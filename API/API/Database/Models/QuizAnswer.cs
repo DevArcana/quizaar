@@ -15,4 +15,18 @@ namespace API.Database.Models
         [Required]
         public virtual QuizQuestion Question { get; set; }
     }
+
+    public class QuizAnswerDTO
+    {
+        public long Id { get; set; }
+        public string Content { get; set; }
+        public bool IsCorrect { get; set; }
+
+        public QuizAnswerDTO(QuizAnswer quizAnswer)
+        {
+            Id = quizAnswer.Id;
+            Content = quizAnswer.Content;
+            IsCorrect = quizAnswer.IsCorrect;
+        }
+    }
 }

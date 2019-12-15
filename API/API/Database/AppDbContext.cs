@@ -15,7 +15,7 @@ namespace API.Database
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
-        public DbSet<Quiz> Quizes { get; set; }
+        public DbSet<QuizTemplate> Quizes { get; set; }
         public DbSet<QuizQuestion> QuizQuestions { get; set; }
         public DbSet<QuizAnswer> QuizAnswers { get; set; }
     }
