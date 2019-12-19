@@ -43,7 +43,7 @@ namespace API.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}/generate")]
-        public ActionResult<CreateQuizForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
+        public ActionResult<QuizTemplateRequestForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
         {
             return Ok(_quizTemplateManager.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
         }

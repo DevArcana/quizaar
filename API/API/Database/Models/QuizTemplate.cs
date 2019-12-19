@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace API.Database.Models
 {
@@ -10,41 +8,82 @@ namespace API.Database.Models
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<QuizQuestion> Questions { get; set; }
+        public virtual IEnumerable<QuizTemplateQuestion> Questions { get; set; }
     }
 
-    public class QuizTemplateShallowDTO
+    public class QuizTemplateQuestion
+    {
+        public long Id { get; set; }
+
+        public Question Question { get; set; }
+        
+        public Answer CorrectAnswer { get; set; }
+        public IEnumerable<Answer> WrongAnswers { get; set; }
+    }
+
+    public class QuizTemplateQuestionResponse
+    {
+        public long Id { get; set; }
+        public string Content { get; set; }
+
+        public class AnswerResponse
+        {
+            public long Id { get; set; }
+            public string Content { get; set; }
+
+            public AnswerResponse(Answer answer)
+            {
+                Id = answer.Id;
+                Content = answer.Content;
+            }
+        }
+
+        public AnswerResponse CorrectAnswer { get; set; }
+        public IEnumerable<AnswerResponse> WrongAnswers { get; set; }
+
+        public QuizTemplateQuestionResponse(QuizTemplateQuestion question)
+        {
+            Id = question.Id;
+            Content = question.Question.Content;
+
+            CorrectAnswer = new AnswerResponse(question.CorrectAnswer);
+            WrongAnswers = question.WrongAnswers.Select(x => new AnswerResponse(x));
+        }
+    }
+
+    public class QuizTemplateShallowResponse
     {
         public long Id { get; set; }
         public string Name { get; set; }
 
-        public QuizTemplateShallowDTO(QuizTemplate quizTemplate)
+        public QuizTemplateShallowResponse(QuizTemplate template)
         {
-            Id = quizTemplate.Id;
-            Name = quizTemplate.Name;
+            Id = template.Id;
+            Name = template.Name;
         }
     }
 
-    public class QuizTemplateDTO : QuizTemplateShallowDTO
+    public class QuizTemplateResponse : QuizTemplateShallowResponse
     {
-        public IEnumerable<QuizQuestionDTO> Questions { get; set; }
+        public IEnumerable<QuizTemplateQuestionResponse> Questions { get; set; }
 
-        public QuizTemplateDTO(QuizTemplate quizTemplate) : base(quizTemplate)
+        public QuizTemplateResponse(QuizTemplate template) : base(template)
         {
-            Questions = quizTemplate.Questions.Select(x => new QuizQuestionDTO(x));
+            Questions = template.Questions.Select(x => new QuizTemplateQuestionResponse(x));
         }
     }
 
-    public class CreateQuizForm
+    public class QuizTemplateRequestForm
     {
-        public class Question
-        {
-            public long Id { get; set; }
-            public ICollection<long> Answers { get; set; }
-        }
-
         public string Name { get; set; }
 
-        public ICollection<Question> Questions { get; set; }
+        public class QuestionWrapper
+        {
+            public long Id { get; set; }
+            public long CorrectAnswerId { get; set; }
+            public IEnumerable<long> WrongAnswersIds { get; set; }
+        }
+
+        public IEnumerable<QuestionWrapper> Questions { get; set; }
     }
 }

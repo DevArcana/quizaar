@@ -10,10 +10,10 @@ namespace API.Services
 {
     public interface IQuizTemplateManager
     {
-        IEnumerable<QuizTemplateShallowDTO> GetAllQuizTemplates();
-        QuizTemplateDTO CreateQuizTemplate(CreateQuizForm form);
-        QuizTemplateDTO GetQuizTemplate(long id);
-        CreateQuizForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName);
+        IEnumerable<QuizTemplateShallowResponse> GetAllQuizTemplates();
+        QuizTemplateResponse CreateQuizTemplate(QuizTemplateRequestForm form);
+        QuizTemplateResponse GetQuizTemplate(long id);
+        QuizTemplateRequestForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName);
         bool DeleteQuizTemplate(long id);
     }
 
@@ -26,12 +26,12 @@ namespace API.Services
             _context = context;
         }
 
-        public IEnumerable<QuizTemplateShallowDTO> GetAllQuizTemplates()
+        public IEnumerable<QuizTemplateShallowResponse> GetAllQuizTemplates()
         {
-            return _context.Quizes.Select(x => new QuizTemplateShallowDTO(x));
+            return _context.QuizTemplates.Select(x => new QuizTemplateShallowResponse(x));
         }
 
-        public QuizTemplateDTO CreateQuizTemplate(CreateQuizForm form)
+        public QuizTemplateResponse CreateQuizTemplate(QuizTemplateRequestForm form)
         {
             var template = new QuizTemplate
             {
@@ -42,38 +42,30 @@ namespace API.Services
                         .Include(x => x.Answers)
                         .FirstOrDefault(q => q.Id == x.Id);
 
-                    return new QuizQuestion
+                    return new QuizTemplateQuestion
                     {
-                        Content = question.Content,
-                        Answers = x.Answers.Select(x =>
-                        {
-                            var answer = question.Answers.FirstOrDefault(a => a.Id == x);
-
-                            return new QuizAnswer
-                            {
-                                Content = answer.Content,
-                                IsCorrect = answer.IsCorrect
-                            };
-                        }).ToList()
+                        Question = question,
+                        CorrectAnswer = question.Answers.FirstOrDefault(a => a.Id == x.CorrectAnswerId),
+                        WrongAnswers = question.Answers.Where(a => x.WrongAnswersIds.Contains(a.Id)).ToList()
                     };
                 }).ToList()
             };
 
-            _context.Quizes.Add(template);
+            _context.QuizTemplates.Add(template);
             _context.SaveChanges();
 
-            return new QuizTemplateDTO(template);
+            return new QuizTemplateResponse(template);
         }
 
-        public QuizTemplateDTO GetQuizTemplate(long id)
+        public QuizTemplateResponse GetQuizTemplate(long id)
         {
-            return _context.Quizes.Select(x => new QuizTemplateDTO(x)).FirstOrDefault(x => x.Id == id);
+            return _context.QuizTemplates.Select(x => new QuizTemplateResponse(x)).FirstOrDefault(x => x.Id == id);
         }
 
         public bool DeleteQuizTemplate(long id)
         {
             // TODO: Add validation
-            var template = _context.Quizes.FirstOrDefault(x => x.Id == id);
+            var template = _context.QuizTemplates.FirstOrDefault(x => x.Id == id);
 
             if (template != null)
             {
@@ -86,7 +78,7 @@ namespace API.Services
             return false;
         }
 
-        private CreateQuizForm.Question[] ShuffleQuestions(Category category, int questionsCount, int answersPerQuestions)
+        private IEnumerable<QuizTemplateRequestForm.QuestionWrapper> ShuffleQuestions(Category category, int questionsCount, int answersPerQuestions)
         {
             var questions = _context.Questions.Where(x =>
                 x.Answers.Count(x => x.IsCorrect) >= 1 &&
@@ -108,17 +100,18 @@ namespace API.Services
                     .Select(x => x.Id)
                     .Take(answersPerQuestions - 1);
 
-                return new CreateQuizForm.Question
+                return new QuizTemplateRequestForm.QuestionWrapper
                 {
                     Id = x.Id,
-                    Answers = badAnswers.Append(goodAnswer).OrderBy(x => Guid.NewGuid()).ToList()
+                    CorrectAnswerId = goodAnswer,
+                    WrongAnswersIds = badAnswers.OrderBy(x => Guid.NewGuid())
                 };
-            }).ToArray();
+            });
 
             return result;
         }
 
-        public CreateQuizForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName)
+        public QuizTemplateRequestForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName)
         {
             var category = _context.Categories
                 .Include(x => x.Questions)
@@ -133,7 +126,7 @@ namespace API.Services
             // error: not enough questions in db fitting answer count
             if (questions == null) return null;
 
-            var form = new CreateQuizForm
+            var form = new QuizTemplateRequestForm
             {
                 Name = quizName,
                 Questions = questions

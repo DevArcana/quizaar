@@ -13,12 +13,12 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class QuizesController : Controller
+    public class TemplatesController : Controller
     {
         private readonly AppDbContext _context;
         private readonly IQuizTemplateManager _quizTemplateManager;
 
-        public QuizesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
+        public TemplatesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
         {
             _context = context;
             _quizTemplateManager = quizTemplateManager;
@@ -26,28 +26,28 @@ namespace API.Controllers
 
         // GET: api/<controller>
         [HttpGet]
-        public ActionResult<IEnumerable<QuizTemplate>> Get()
+        public ActionResult<IEnumerable<QuizTemplateShallowResponse>> Get()
         {
-            return Ok(_context.Quizes
-                .Include(x => x.Questions)
-                .ThenInclude(x => x.Answers)
-                .Select(x => new QuizTemplateDTO(x)));
+            return Ok(_context.QuizTemplates
+                .Include(x => x.Questions).ThenInclude(x => x.WrongAnswers)
+                .Include(x => x.Questions).ThenInclude(x => x.CorrectAnswer)
+                .Select(x => new QuizTemplateShallowResponse(x)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public ActionResult<QuizTemplate> Get(long id)
+        public ActionResult<QuizTemplateResponse> Get(long id)
         {
-            return Ok(_context.Quizes
-                .Include(x => x.Questions)
-                .ThenInclude(x => x.Answers)
-                .Select(x => new QuizTemplateDTO(x))
+            return Ok(_context.QuizTemplates
+                .Include(x => x.Questions).ThenInclude(x => x.CorrectAnswer)
+                .Include(x => x.Questions).ThenInclude(x => x.WrongAnswers)
+                .Select(x => new QuizTemplateResponse(x))
                 .FirstOrDefault(x => x.Id == id));
         }
 
         // POST api/<controller>
         [HttpPost]
-        public ActionResult Post([FromBody]CreateQuizForm form)
+        public ActionResult Post([FromBody]QuizTemplateRequestForm form)
         {
             return Ok(_quizTemplateManager.CreateQuizTemplate(form));
         }
@@ -56,6 +56,7 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
+            // TODO: Implement this
         }
 
         // DELETE api/<controller>/5
