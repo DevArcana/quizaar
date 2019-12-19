@@ -13,12 +13,12 @@ namespace API.Controllers
     public class CategoriesController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IQuizService _quizService;
+        private readonly IQuizTemplateManager _quizTemplateManager;
 
-        public CategoriesController(AppDbContext context, IQuizService quizService)
+        public CategoriesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
         {
             _context = context;
-            _quizService = quizService;
+            _quizTemplateManager = quizTemplateManager;
         }
 
         // GET: api/<controller>
@@ -45,7 +45,7 @@ namespace API.Controllers
         [HttpGet("{id}/generate")]
         public ActionResult<CreateQuizForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
         {
-            return Ok(_quizService.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
+            return Ok(_quizTemplateManager.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
         }
 
         // POST api/<controller>

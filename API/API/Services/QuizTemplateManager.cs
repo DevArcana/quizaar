@@ -8,20 +8,82 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Services
 {
-    public interface IQuizService
+    public interface IQuizTemplateManager
     {
+        IEnumerable<QuizTemplateShallowDTO> GetAllQuizTemplates();
+        QuizTemplateDTO CreateQuizTemplate(CreateQuizForm form);
+        QuizTemplateDTO GetQuizTemplate(long id);
         CreateQuizForm GenerateTemplateFromCategory(long categoryId, int questionsCount, int answersPerQuestion, string quizName);
-        QuizTemplate CreateNewQuizTemplate(CreateQuizForm form);
         bool DeleteQuizTemplate(long id);
     }
 
-    public class QuizService : IQuizService
+    public class QuizTemplateTemplateManager : IQuizTemplateManager
     {
         private readonly AppDbContext _context;
 
-        public QuizService(AppDbContext context)
+        public QuizTemplateTemplateManager(AppDbContext context)
         {
             _context = context;
+        }
+
+        public IEnumerable<QuizTemplateShallowDTO> GetAllQuizTemplates()
+        {
+            return _context.Quizes.Select(x => new QuizTemplateShallowDTO(x));
+        }
+
+        public QuizTemplateDTO CreateQuizTemplate(CreateQuizForm form)
+        {
+            var template = new QuizTemplate
+            {
+                Name = form.Name,
+                Questions = form.Questions.Select(x =>
+                {
+                    var question = _context.Questions
+                        .Include(x => x.Answers)
+                        .FirstOrDefault(q => q.Id == x.Id);
+
+                    return new QuizQuestion
+                    {
+                        Content = question.Content,
+                        Answers = x.Answers.Select(x =>
+                        {
+                            var answer = question.Answers.FirstOrDefault(a => a.Id == x);
+
+                            return new QuizAnswer
+                            {
+                                Content = answer.Content,
+                                IsCorrect = answer.IsCorrect
+                            };
+                        }).ToList()
+                    };
+                }).ToList()
+            };
+
+            _context.Quizes.Add(template);
+            _context.SaveChanges();
+
+            return new QuizTemplateDTO(template);
+        }
+
+        public QuizTemplateDTO GetQuizTemplate(long id)
+        {
+            return _context.Quizes.Select(x => new QuizTemplateDTO(x)).FirstOrDefault(x => x.Id == id);
+        }
+
+        public bool DeleteQuizTemplate(long id)
+        {
+            // TODO: Add validation
+            var template = _context.Quizes.FirstOrDefault(x => x.Id == id);
+
+            if (template != null)
+            {
+                _context.Remove(template);
+                _context.SaveChanges();
+
+                return true;
+            }
+
+            return false;
         }
 
         private CreateQuizForm.Question[] ShuffleQuestions(Category category, int questionsCount, int answersPerQuestions)
@@ -39,7 +101,7 @@ namespace API.Services
                     .OrderBy(x => Guid.NewGuid())
                     .Select(x => x.Id)
                     .FirstOrDefault();
-                
+
                 var badAnswers = x.Answers
                     .Where(x => !x.IsCorrect)
                     .OrderBy(x => Guid.NewGuid())
@@ -78,45 +140,6 @@ namespace API.Services
             };
 
             return form;
-        }
-
-        public QuizTemplate CreateNewQuizTemplate(CreateQuizForm form)
-        {
-            var template = new QuizTemplate
-            {
-                Name = form.Name,
-                Questions = form.Questions.Select(x =>
-                {
-                    var question = _context.Questions
-                        .Include(x => x.Answers)
-                        .FirstOrDefault(q => q.Id == x.Id);
-
-                    return new QuizQuestion
-                    {
-                        Content = question.Content,
-                        Answers = x.Answers.Select(x =>
-                        {
-                            var answer = question.Answers.FirstOrDefault(a => a.Id == x);
-
-                            return new QuizAnswer
-                            {
-                                Content = answer.Content,
-                                IsCorrect = answer.IsCorrect
-                            };
-                        }).ToList()
-                    };
-                }).ToList()
-            };
-
-            _context.Quizes.Add(template);
-            _context.SaveChanges();
-
-            return template;
-        }
-
-        public bool DeleteQuizTemplate(long id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

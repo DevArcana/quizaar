@@ -23,7 +23,7 @@ namespace API
         {
             services.AddControllers();
             services.AddDbContext<AppDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("db")));
-            services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IQuizTemplateManager, QuizTemplateTemplateManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,12 +16,12 @@ namespace API.Controllers
     public class QuizesController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IQuizService _quizService;
+        private readonly IQuizTemplateManager _quizTemplateManager;
 
-        public QuizesController(AppDbContext context, IQuizService quizService)
+        public QuizesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
         {
             _context = context;
-            _quizService = quizService;
+            _quizTemplateManager = quizTemplateManager;
         }
 
         // GET: api/<controller>
@@ -49,8 +49,7 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]CreateQuizForm form)
         {
-            _quizService.CreateNewQuizTemplate(form);
-            return Ok();
+            return Ok(_quizTemplateManager.CreateQuizTemplate(form));
         }
 
         // PUT api/<controller>/5
@@ -61,8 +60,9 @@ namespace API.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(long id)
         {
+            _quizTemplateManager.DeleteQuizTemplate(id);
         }
     }
 }
