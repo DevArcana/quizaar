@@ -17,21 +17,20 @@ namespace API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IQuizTemplateManager _quizTemplateManager;
+        private readonly IQuizInstanceManager _quizInstanceManager;
 
-        public TemplatesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
+        public TemplatesController(AppDbContext context, IQuizTemplateManager quizTemplateManager, IQuizInstanceManager quizInstanceManager)
         {
             _context = context;
             _quizTemplateManager = quizTemplateManager;
+            _quizInstanceManager = quizInstanceManager;
         }
 
         // GET: api/<controller>
         [HttpGet]
         public ActionResult<IEnumerable<QuizTemplateShallowResponse>> Get()
         {
-            return Ok(_context.QuizTemplates
-                .Include(x => x.Questions).ThenInclude(x => x.WrongAnswers)
-                .Include(x => x.Questions).ThenInclude(x => x.CorrectAnswer)
-                .Select(x => new QuizTemplateShallowResponse(x)));
+            return Ok(_context.QuizTemplates.Select(x => new QuizTemplateShallowResponse(x)));
         }
 
         // GET api/<controller>/5
@@ -41,8 +40,18 @@ namespace API.Controllers
             return Ok(_context.QuizTemplates
                 .Include(x => x.Questions).ThenInclude(x => x.CorrectAnswer)
                 .Include(x => x.Questions).ThenInclude(x => x.WrongAnswers)
+                .Include(x => x.Questions).ThenInclude(x => x.Question)
+                .Where(x => x.Id == id)
                 .Select(x => new QuizTemplateResponse(x))
-                .FirstOrDefault(x => x.Id == id));
+                .FirstOrDefault());
+        }
+
+        // GET api/<controller>/5
+        [HttpGet("{id}/activate")]
+        public ActionResult<QuizInstanceResponse> ActivateInstance(long id, int hours = 1, int minutes = 0, int seconds = 0)
+        {
+            var instance = _quizInstanceManager.ActivateQuiz(id, new TimeSpan(hours, minutes, seconds));
+            return Ok(instance);
         }
 
         // POST api/<controller>

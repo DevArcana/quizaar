@@ -17,11 +17,11 @@ namespace API.Services
         bool DeleteQuizTemplate(long id);
     }
 
-    public class QuizTemplateTemplateManager : IQuizTemplateManager
+    public class QuizTemplateManager : IQuizTemplateManager
     {
         private readonly AppDbContext _context;
 
-        public QuizTemplateTemplateManager(AppDbContext context)
+        public QuizTemplateManager(AppDbContext context)
         {
             _context = context;
         }
