@@ -35,5 +35,27 @@ namespace API.Controllers
         {
             return _quizInstanceManager.GetInstanceResponse(id, false);
         }
+
+        // POST api/<controller>/5/answer
+        [HttpPost("{id}/answer")]
+        public ActionResult<QuizAnswerSheetResponse> Answer(long id, [FromBody] QuizAnswerSheetForm answerSheetForm)
+        {
+            var result = _quizInstanceManager.AddAnswerSheet(id, answerSheetForm);
+
+            if (result.Success) return Ok(result.Value);
+
+            return BadRequest(result.Error);
+        }
+
+        // GET api/<controller>/5/answers
+        [HttpGet("{id}/answers")]
+        public ActionResult<QuizAnswerSheetResponse> GetAnswers(long id)
+        {
+            var result = _quizInstanceManager.GetAnswerSheets(id);
+
+            if (result.Success) return Ok(result.Value);
+
+            return BadRequest(result.Error);
+        }
     }
 }

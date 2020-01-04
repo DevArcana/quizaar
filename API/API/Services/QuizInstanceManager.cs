@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Database;
 using API.Database.Models;
+using API.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services
@@ -20,8 +21,9 @@ namespace API.Services
         IEnumerable<QuizInstance> GetAllHistoricInstances();
 
         bool DeleteInstance(long instanceId);
-        
-        bool AddAnswerSheet(long instanceId, QuizAnswerSheetForm form);
+
+        Result<QuizAnswerSheetResponse> AddAnswerSheet(long instanceId, QuizAnswerSheetForm form);
+        Result<IEnumerable<QuizAnswerSheetResponse>> GetAnswerSheets(long instanceId);
     }
 
     public class QuizInstanceManager : IQuizInstanceManager
@@ -123,9 +125,72 @@ namespace API.Services
             throw new NotImplementedException();
         }
 
-        public bool AddAnswerSheet(long instanceId, QuizAnswerSheetForm form)
+        public Result<QuizAnswerSheetResponse> AddAnswerSheet(long instanceId, QuizAnswerSheetForm form)
         {
-            throw new NotImplementedException();
+            var instance = _context.QuizInstances
+                .Include(x => x.AnswerSheets)
+                .Include(x => x.Questions).ThenInclude(x => x.CorrectAnswers)
+                .Include(x => x.Questions).ThenInclude(x => x.WrongAnswers)
+                .FirstOrDefault(x => x.Id == instanceId);
+
+            if (instance == null) return Result.Fail<QuizAnswerSheetResponse>("Couldn't find instance of id " + instanceId);
+
+            if (string.IsNullOrEmpty(form.Identity)) return Result.Fail<QuizAnswerSheetResponse>("Invalid identity provided.");
+
+            var answers = form.QuestionAnswerPairs.Select(pair =>
+            {
+                var question = instance.Questions.FirstOrDefault(x => x.Id == pair.Q);
+
+                var correctAnswer = question.CorrectAnswers.FirstOrDefault(x => x.MaskingId == pair.A);
+
+                if (correctAnswer != null)
+                {
+                    return new QuizAnswerQuestionPair
+                    {
+                        Question = question,
+                        Answer = correctAnswer,
+                        IsCorrect = true
+                    };
+                }
+
+                var wrongAnswer = question.WrongAnswers.FirstOrDefault(x => x.MaskingId == pair.A);
+
+                return new QuizAnswerQuestionPair
+                {
+                    Question = question,
+                    Answer = wrongAnswer,
+                    IsCorrect = false
+                };
+            });
+
+            var pointsScored = answers.Count(x => x.IsCorrect);
+
+            var answerSheet = new QuizAnswerSheet
+            {
+                Identity = form.Identity,
+                Instance = instance,
+                Answers = answers,
+                PointsScored = pointsScored
+            };
+
+            instance.AnswerSheets.Add(answerSheet);
+
+            _context.QuizInstances.Update(instance);
+            _context.SaveChanges();
+
+            return Result.Ok(new QuizAnswerSheetResponse(answerSheet));
+        }
+
+        public Result<IEnumerable<QuizAnswerSheetResponse>> GetAnswerSheets(long instanceId)
+        {
+            var instance = _context.QuizInstances
+                .Include(x => x.AnswerSheets)
+                .Include(x => x.Questions)
+                .FirstOrDefault(x => x.Id == instanceId);
+
+            if (instance == null) return Result.Fail<IEnumerable<QuizAnswerSheetResponse>>("Couldn't find instance of id " + instanceId);
+            
+            return Result.Ok(instance.AnswerSheets.Select(x => new QuizAnswerSheetResponse(x)));
         }
     }
 }

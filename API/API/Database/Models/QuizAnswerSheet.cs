@@ -9,6 +9,7 @@ namespace API.Database.Models
     {
         public long Id { get; set; }
         public string Identity { get; set; }
+        public int PointsScored { get; set; }
 
         public virtual QuizInstance Instance { get; set; }
 
@@ -18,14 +19,35 @@ namespace API.Database.Models
     public class QuizAnswerQuestionPair
     {
         public long Id { get; set; }
+        public bool IsCorrect { get; set; }
         public virtual QuizInstanceQuestion Question { get; set; }
         public virtual QuizInstanceAnswer Answer { get; set; }
     }
 
     public class QuizAnswerSheetForm
     {
-        public long InstanceId { get; set; }
         public string Identity { get; set; }
-        public IEnumerable<(long, long)> QuestionAnswerPairs { get; set; }
+
+        public class QuestionAnswerPair
+        {
+            public long Q { get; set; }
+            public long A { get; set; }
+        }
+
+        public IEnumerable<QuestionAnswerPair> QuestionAnswerPairs { get; set; }
+    }
+
+    public class QuizAnswerSheetResponse
+    {
+        public string Identity { get; set; }
+        public int Correct { get; set; }
+        public int Total { get; set; }
+
+        public QuizAnswerSheetResponse(QuizAnswerSheet answerSheet)
+        {
+            Identity = answerSheet.Identity;
+            Correct = answerSheet.PointsScored;
+            Total = answerSheet.Instance.Questions.Count();
+        }
     }
 }
