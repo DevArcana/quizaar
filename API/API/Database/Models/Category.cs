@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Database.Models.Base;
 
 namespace API.Database.Models
 {
-    public class Category
+    public class Category : BaseModel
     {
-        public long Id { get; set; }
         public string Name { get; set; }
 
-        public virtual IEnumerable<Question> Questions { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
     }
 
     public class CategoryShallowDTO

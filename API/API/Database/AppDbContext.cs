@@ -15,7 +15,11 @@ namespace API.Database
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
-        public DbSet<QuizTemplate> QuizTemplates { get; set; }
-        public DbSet<QuizInstance> QuizInstances { get; set; }
+        public DbSet<Template> Templates { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+        }
     }
 }

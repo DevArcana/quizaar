@@ -13,12 +13,10 @@ namespace API.Controllers
     public class CategoriesController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IQuizTemplateManager _quizTemplateManager;
 
-        public CategoriesController(AppDbContext context, IQuizTemplateManager quizTemplateManager)
+        public CategoriesController(AppDbContext context)
         {
             _context = context;
-            _quizTemplateManager = quizTemplateManager;
         }
 
         // GET: api/<controller>
@@ -41,12 +39,12 @@ namespace API.Controllers
                 .FirstOrDefault());
         }
 
-        // GET api/<controller>/5
-        [HttpGet("{id}/generate")]
-        public ActionResult<QuizTemplateRequestForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
-        {
-            return Ok(_quizTemplateManager.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
-        }
+        //GET api/<controller>/5
+        //[HttpGet("{id}/generate")]
+        //public ActionResult<QuizTemplateRequestForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
+        //{
+        //    return Ok(_quizTemplateManager.GenerateTemplateFromCategory(id, questionsCount, answersPerQuestion, quizName));
+        //}
 
         // POST api/<controller>
         [HttpPost]
