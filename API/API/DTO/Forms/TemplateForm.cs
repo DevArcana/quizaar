@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Microsoft.Extensions.WebEncoders.Testing;
+﻿using System.Collections.Generic;
 
-namespace API.Application.Forms
+namespace API.DTO.Forms
 {
     public class TemplateForm
     {

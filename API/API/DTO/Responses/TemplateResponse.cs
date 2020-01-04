@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using API.Database.Models;
 
-namespace API.Application.Responses
+namespace API.DTO.Responses
 {
     public class TemplateResponse
     {
