@@ -12,6 +12,8 @@ namespace API.Database.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
+        public bool IsActive => DateTime.UtcNow < EndTime;
+
         public virtual IEnumerable<InstanceQuestion> Questions { get; set; }
 
         public virtual IEnumerable<Attempt> Attempts { get; set; }
