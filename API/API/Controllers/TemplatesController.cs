@@ -15,18 +15,20 @@ namespace API.Controllers
     [Route("api/v1/[controller]")]
     public class TemplatesController : Controller
     {
-        private readonly ITemplateService _service;
+        private readonly ITemplateService _templateService;
+        private readonly IInstanceService _instanceService;
 
-        public TemplatesController(ITemplateService service)
+        public TemplatesController(ITemplateService templateService, IInstanceService instanceService)
         {
-            _service = service;
+            _templateService = templateService;
+            _instanceService = instanceService;
         }
 
         // GET: api/<controller>
         [HttpGet]
         public IEnumerable<TemplateResponse> Get()
         {
-            var result = _service.GetTemplates().Select(x => new TemplateResponse(x));
+            var result = _templateService.GetTemplates().Select(x => new TemplateResponse(x));
 
             return result;
         }
@@ -35,9 +37,20 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(long id)
         {
-            var result = _service.GetTemplate(id);
+            var result = _templateService.GetTemplate(id);
 
             if (result.Success) return Ok(new TemplateResponse(result.Value));
+
+            return BadRequest(result.Error);
+        }
+
+        // GET api/<controller>/5/activate
+        [HttpGet("{id}/activate")]
+        public IActionResult Activate(long id)
+        {
+            var result = _instanceService.CreateInstance(id, TimeSpan.FromHours(1));
+
+            if (result.Success) return Ok(new InstanceResponse(result.Value));
 
             return BadRequest(result.Error);
         }
@@ -46,7 +59,7 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]TemplateForm form)
         {
-            var result = _service.CreateTemplate(form);
+            var result = _templateService.CreateTemplate(form);
 
             if (result.Success) return Ok(new TemplateResponse(result.Value));
 
@@ -57,7 +70,7 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(long id, [FromBody]TemplateForm form)
         {
-            var result = _service.ModifyTemplate(id, form);
+            var result = _templateService.ModifyTemplate(id, form);
 
             if (result.Success) return Ok();
 
@@ -68,7 +81,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
-            var result = _service.DeleteTemplate(id);
+            var result = _templateService.DeleteTemplate(id);
 
             if (result.Success) return Ok(result.Value);
 

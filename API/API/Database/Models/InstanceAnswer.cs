@@ -10,5 +10,16 @@ namespace API.Database.Models
     {
         public string Content { get; set; }
         public bool IsCorrect { get; set; }
+
+        public InstanceAnswer()
+        {
+
+        }
+
+        public InstanceAnswer(TemplateAnswer answer)
+        {
+            Content = answer.Answer.Content;
+            IsCorrect = answer.Answer.IsCorrect;
+        }
     }
 }

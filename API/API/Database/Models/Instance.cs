@@ -14,8 +14,22 @@ namespace API.Database.Models
 
         public bool IsActive => DateTime.UtcNow < EndTime;
 
-        public virtual IEnumerable<InstanceQuestion> Questions { get; set; }
+        public IEnumerable<InstanceQuestion> Questions { get; set; }
 
         public virtual IEnumerable<Attempt> Attempts { get; set; }
+
+        public Instance()
+        {
+
+        }
+
+        public Instance(Template template)
+        {
+            Name = template.Name;
+            StartTime = DateTime.UtcNow;
+            EndTime = DateTime.UtcNow.AddHours(1);
+
+            Questions = template.Questions.Select(x => new InstanceQuestion(x)).OrderBy(x => Guid.NewGuid()).ToList();
+        }
     }
 }

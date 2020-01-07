@@ -16,6 +16,7 @@ namespace API.Database
         public DbSet<Answer> Answers { get; set; }
 
         public DbSet<Template> Templates { get; set; }
+        public DbSet<Instance> Instances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
