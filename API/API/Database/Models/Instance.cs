@@ -16,7 +16,7 @@ namespace API.Database.Models
 
         public IEnumerable<InstanceQuestion> Questions { get; set; }
 
-        public virtual IEnumerable<Attempt> Attempts { get; set; }
+        public virtual ICollection<Attempt> Attempts { get; set; }
 
         public Instance()
         {

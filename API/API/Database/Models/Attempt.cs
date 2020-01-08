@@ -12,6 +12,8 @@ namespace API.Database.Models
 
         public int PointsScored { get; set; }
 
+        public Instance Instance { get; set; }
+
         public virtual IEnumerable<Response> Responses { get; set; }
     }
 }

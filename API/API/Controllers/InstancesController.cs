@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTO.Forms;
 using API.DTO.Responses;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,34 @@ namespace API.Controllers
             if (result.Success)
             {
                 return Ok(new InstanceResponse(result.Value));
+            }
+
+            return BadRequest(result.Error);
+        }
+
+        // GET api/<controller>/5/solve
+        [HttpPost("{id}/solve")]
+        public IActionResult Solve(long id, [FromBody] AttemptForm form)
+        {
+            var result = _instanceService.SolveQuiz(id, form);
+
+            if (result.Success)
+            {
+                return Ok(new AttemptResponse(result.Value));
+            }
+
+            return BadRequest(result.Error);
+        }
+
+        // GET api/<controller>/5/solve
+        [HttpGet("{id}/attempts")]
+        public IActionResult GetAttempts(long id)
+        {
+            var result = _instanceService.GetInstance(id, true);
+
+            if (result.Success)
+            {
+                return Ok(result.Value.Attempts.Select(x => new AttemptResponse(x)));
             }
 
             return BadRequest(result.Error);
