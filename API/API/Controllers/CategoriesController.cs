@@ -46,7 +46,10 @@ namespace API.Controllers
         [HttpGet("{id}/generate")]
         public ActionResult<TemplateForm> GetQuizTemplate(long id, int questionsCount, int answersPerQuestion, string quizName)
         {
-            return Ok(_templateService.GenerateForm(id, quizName, questionsCount, answersPerQuestion));
+            var result = _templateService.GenerateForm(id, quizName, questionsCount, answersPerQuestion);
+
+            if (result.Failure) return BadRequest(result.Error);
+            return Ok(result.Value);
         }
 
         // POST api/<controller>

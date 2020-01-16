@@ -42,7 +42,7 @@ namespace API.Services
 
             if (category == null) return Result.Fail<TemplateForm>("Couldn't find category of id " + categoryId);
 
-            var questions = category.Questions;
+            var questions = category.Questions.OrderBy(x => Guid.NewGuid()).ToList();
 
             var questionTemplates = new List<TemplateForm.Question>();
 
