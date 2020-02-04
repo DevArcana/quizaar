@@ -10,6 +10,8 @@ namespace Domain.Entities
         public bool IsCorrect { get; set; }
         public string Content { get; }
 
+        public virtual Question Question { get; set; }
+
         private Answer()
         {
             // Needed by EF Core

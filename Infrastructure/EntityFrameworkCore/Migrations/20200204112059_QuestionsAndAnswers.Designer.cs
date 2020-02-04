@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200204110812_QuestionsAndAnswers")]
+    [Migration("20200204112059_QuestionsAndAnswers")]
     partial class QuestionsAndAnswers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,19 +30,9 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
                     b.Property<long?>("QuestionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long?>("QuestionId1")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long?>("QuestionId2")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionId");
-
-                    b.HasIndex("QuestionId1");
-
-                    b.HasIndex("QuestionId2");
 
                     b.ToTable("Answer");
                 });
@@ -85,22 +75,14 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("Domain.Entities.Answer", b =>
                 {
-                    b.HasOne("Domain.Entities.Question", null)
+                    b.HasOne("Domain.Entities.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId");
-
-                    b.HasOne("Domain.Entities.Question", null)
-                        .WithMany("CorrectAnswers")
-                        .HasForeignKey("QuestionId1");
-
-                    b.HasOne("Domain.Entities.Question", null)
-                        .WithMany("IncorrectAnswers")
-                        .HasForeignKey("QuestionId2");
                 });
 
             modelBuilder.Entity("Domain.Entities.Question", b =>
                 {
-                    b.HasOne("Domain.Entities.Category", null)
+                    b.HasOne("Domain.Entities.Category", "Category")
                         .WithMany("Questions")
                         .HasForeignKey("CategoryId");
                 });

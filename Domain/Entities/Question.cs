@@ -10,10 +10,12 @@ namespace Domain.Entities
     {
         public string Content { get; set; }
         public bool IsOpen { get; set; }
-        public ICollection<Answer> Answers { get; set; }
+        public virtual ICollection<Answer> Answers { get; set; }
 
         public IEnumerable<Answer> CorrectAnswers => Answers.Where(x => x.IsCorrect);
         public IEnumerable<Answer> IncorrectAnswers => Answers.Where(x => !x.IsCorrect);
+
+        public virtual Category Category { get; set; }
 
         private Question()
         {

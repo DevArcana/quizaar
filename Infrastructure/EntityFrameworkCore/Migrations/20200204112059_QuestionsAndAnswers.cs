@@ -7,6 +7,19 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Question",
                 columns: table => new
                 {
@@ -34,9 +47,7 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     IsCorrect = table.Column<bool>(nullable: false),
-                    QuestionId = table.Column<long>(nullable: true),
-                    QuestionId1 = table.Column<long>(nullable: true),
-                    QuestionId2 = table.Column<long>(nullable: true)
+                    QuestionId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,34 +58,12 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
                         principalTable: "Question",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Answer_Question_QuestionId1",
-                        column: x => x.QuestionId1,
-                        principalTable: "Question",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Answer_Question_QuestionId2",
-                        column: x => x.QuestionId2,
-                        principalTable: "Question",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answer_QuestionId",
                 table: "Answer",
                 column: "QuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answer_QuestionId1",
-                table: "Answer",
-                column: "QuestionId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answer_QuestionId2",
-                table: "Answer",
-                column: "QuestionId2");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Question_CategoryId",
@@ -89,6 +78,9 @@ namespace Infrastructure.EntityFrameworkCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }
