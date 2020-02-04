@@ -14,11 +14,6 @@ namespace Application.Categories.Commands.DeleteCategory
     {
         public long Id { get; set; }
 
-        public DeleteCategoryCommand(long id)
-        {
-            Id = id;
-        }
-
         public class CommandHandler : IRequestHandler<DeleteCategoryCommand, Result>
         {
             private readonly IApplicationDbContext _context;

@@ -4,13 +4,13 @@ using Application.Common.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Categories.Commands.CreateCategory
+namespace Application.Categories.Commands.RenameCategory
 {
-    public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
+    public class RenameCategoryCommandValidator : AbstractValidator<RenameCategoryCommand>
     {
         private readonly IApplicationDbContext _context;
 
-        public CreateCategoryCommandValidator(IApplicationDbContext context)
+        public RenameCategoryCommandValidator(IApplicationDbContext context)
         {
             _context = context;
 
