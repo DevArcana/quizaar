@@ -8,6 +8,7 @@ namespace Domain.Entities
     public class Category : BaseEntity
     {
         public string Name { get; set; }
+        public ICollection<Question> Questions { get; set; }
 
         private Category()
         {
