@@ -12,11 +12,11 @@ using MediatR;
 
 namespace Application.Categories.Commands.CreateCategory
 {
-    public class CreateCategoryCommand : IRequest<CreatedObject>
+    public class CreateCategoryCommand : IRequest<CreateCategoryViewModel>
     {
         public string CategoryName { get; set; }
 
-        public class CommandHandler : IRequestHandler<CreateCategoryCommand, CreatedObject>
+        public class CommandHandler : IRequestHandler<CreateCategoryCommand, CreateCategoryViewModel>
         {
             private readonly IApplicationDbContext _context;
             private readonly IMapper _mapper;
@@ -27,14 +27,14 @@ namespace Application.Categories.Commands.CreateCategory
                 _mapper = mapper;
             }
 
-            public async Task<CreatedObject> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+            public async Task<CreateCategoryViewModel> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
             {
                 var entity = new Category(request.CategoryName);
 
                 _context.Categories.Add(entity);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                return _mapper.Map<CreatedObject>(entity);
+                return _mapper.Map<CreateCategoryViewModel>(entity);
             }
         }
     }

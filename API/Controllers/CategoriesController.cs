@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Categories.Commands;
 using Application.Categories.Commands.CreateCategory;
 using Application.Categories.Commands.DeleteCategory;
 using Application.Categories.Commands.RenameCategory;
+using Application.Categories.Queries.CategoryDetails;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Application.Categories.Queries.ListCategories;
@@ -18,13 +20,19 @@ namespace API.Controllers
     public class CategoriesController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> ListCategories()
+        public async Task<ActionResult<IEnumerable<ListCategoriesViewModel>>> ListCategories()
         {
             return await ExecuteCommand(new ListCategoriesQuery());
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CategoryDetailsViewModel>> GetCategoryDetails(long id)
+        {
+            return await ExecuteCommand(new CategoryDetailsQuery {Id = id});
+        }
+
         [HttpPost]
-        public async Task<ActionResult<CreatedObject>> CreateCategory([FromBody] CreateCategoryCommand command)
+        public async Task<ActionResult<CreateCategoryViewModel>> CreateCategory([FromBody] CreateCategoryCommand command)
         {
             return await ExecuteCommand(command);
         }
