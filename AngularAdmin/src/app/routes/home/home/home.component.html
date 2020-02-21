@@ -1,5 +1,16 @@
-<p>home works!</p>
-<a [routerLink]="['/home']">Home</a>
-<a [routerLink]="['/account']">Account</a>
-<a [routerLink]="['/manage-questions']">Questions</a>
-<a [routerLink]="['/manage-quizes']">Quizes</a>
+<div class="content" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="space-between" fxFlexFill>
+  <div fxFlex fxLayout="column" fxLayoutAlign="center">
+    <app-account fxFlex>
+    </app-account>
+  </div>
+  <div fxFlex fxLayout="column" fxLayoutAlign="center">
+    <div fxFlex class="card">
+      I am a card!
+    </div>
+  </div>
+  <div fxFlex fxLayout="column" fxLayoutAlign="center">
+    <div fxFlex class="card">
+      I am a card!
+    </div>
+  </div>
+</div>
