@@ -16,10 +16,13 @@ namespace Application.Common.Queries
         public int Page { get; }
         public int ItemsPerPage { get; }
 
-        public PaginatedQuery(int page, int itemsPerPage)
+        public string SortQuery { get; }
+
+        public PaginatedQuery(int page, int itemsPerPage, string sortQuery)
         {
             Page = page;
             ItemsPerPage = itemsPerPage;
+            SortQuery = sortQuery;
         }
     }
 }
