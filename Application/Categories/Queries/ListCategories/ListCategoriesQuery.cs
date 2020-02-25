@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Categories.Commands.CreateCategory;
 using Application.Common.Interfaces;
+using Application.Common.Queries;
+using Application.Common.ViewModels;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities;
@@ -13,9 +15,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.ListCategories
 {
-    public class ListCategoriesQuery : IRequest<IEnumerable<ListCategoriesViewModel>>
+    public class ListCategoriesQuery : PaginatedQuery, IRequest<PaginatedList<ListCategoriesViewModel>>
     {
-        public class CommandHandler : IRequestHandler<ListCategoriesQuery, IEnumerable<ListCategoriesViewModel>>
+        public ListCategoriesQuery(int page, int itemsPerPage) : base(page, itemsPerPage)
+        {
+
+        }
+
+        public class CommandHandler : IRequestHandler<ListCategoriesQuery, PaginatedList<ListCategoriesViewModel>>
         {
             private readonly IApplicationDbContext _context;
             private readonly IMapper _mapper;
@@ -26,11 +33,11 @@ namespace Application.Categories.Queries.ListCategories
                 _mapper = mapper;
             }
 
-            public async Task<IEnumerable<ListCategoriesViewModel>> Handle(ListCategoriesQuery request, CancellationToken cancellationToken)
+            public async Task<PaginatedList<ListCategoriesViewModel>> Handle(ListCategoriesQuery request, CancellationToken cancellationToken)
             {
                 var categories = await _context.Categories
                     .ProjectTo<ListCategoriesViewModel>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
+                    .PaginateAsync(request.Page, request.ItemsPerPage, cancellationToken);
 
                 return categories;
             }
