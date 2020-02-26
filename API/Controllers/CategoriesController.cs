@@ -20,9 +20,9 @@ namespace API.Controllers
     public class CategoriesController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<PaginatedList<ListCategoriesViewModel>>> ListCategories(int page = 1, int itemsPerPage = 10, string sort = null)
+        public async Task<ActionResult<PaginatedList<ListCategoriesViewModel>>> ListCategories(int page = 1, int itemsPerPage = 10, string sort = null, string search = null)
         {
-            return await ExecuteCommand(new ListCategoriesQuery(page, itemsPerPage, sort));
+            return await ExecuteCommand(new ListCategoriesQuery(page, itemsPerPage, sort, search));
         }
 
         [HttpGet("{id}")]

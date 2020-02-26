@@ -14,15 +14,13 @@ using Application.Common.Queries;
 using Application.Common.ViewModels;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.Queries.ListCategories
 {
     public class ListCategoriesQuery : PaginatedQuery, IRequest<PaginatedList<ListCategoriesViewModel>>
     {
-        public ListCategoriesQuery(int page, int itemsPerPage, string sortQuery) : base(page, itemsPerPage, sortQuery)
+        public ListCategoriesQuery(int page, int itemsPerPage, string sortQuery, string search) : base(page, itemsPerPage, sortQuery, search)
         {
 
         }
@@ -40,10 +38,16 @@ namespace Application.Categories.Queries.ListCategories
 
             public async Task<PaginatedList<ListCategoriesViewModel>> Handle(ListCategoriesQuery request, CancellationToken cancellationToken)
             {
-                return await _context.Categories
+                var categories = _context.Categories
                     .ProjectTo<ListCategoriesViewModel>(_mapper.ConfigurationProvider)
-                    .Sort(request.SortQuery)
-                    .PaginateAsync(request.Page, request.ItemsPerPage, cancellationToken);
+                    .Sort(request.SortQuery);
+
+                if (!string.IsNullOrWhiteSpace(request.Search))
+                {
+                    categories = categories.Where(x => x.Name.Contains(request.Search, StringComparison.InvariantCultureIgnoreCase));
+                }
+
+                return await categories.PaginateAsync(request.Page, request.ItemsPerPage, cancellationToken);
             }
         }
     }
