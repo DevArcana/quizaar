@@ -18,13 +18,8 @@ using MediatR;
 
 namespace Application.Categories.Queries.ListCategories
 {
-    public class ListCategoriesQuery : PaginatedQuery, IRequest<PaginatedList<ListCategoriesViewModel>>
+    public class ListCategoriesQuery : PaginatedQuery<ListCategoriesViewModel>
     {
-        public ListCategoriesQuery(int page, int itemsPerPage, string sortQuery, string search) : base(page, itemsPerPage, sortQuery, search)
-        {
-
-        }
-
         public class CommandHandler : IRequestHandler<ListCategoriesQuery, PaginatedList<ListCategoriesViewModel>>
         {
             private readonly IApplicationDbContext _context;
@@ -40,7 +35,7 @@ namespace Application.Categories.Queries.ListCategories
             {
                 var categories = _context.Categories
                     .ProjectTo<ListCategoriesViewModel>(_mapper.ConfigurationProvider)
-                    .Sort(request.SortQuery);
+                    .Sort(request.Sort);
 
                 if (!string.IsNullOrWhiteSpace(request.Search))
                 {

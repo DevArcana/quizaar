@@ -29,7 +29,7 @@ namespace Application.Common.ViewModels
         public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
 
-        private List<T> _items = new List<T>();
+        private readonly List<T> _items = new List<T>();
         public IReadOnlyCollection<T> Items => _items.AsReadOnly();
 
         public PaginatedList(List<T> items, int pageIndex, int itemsPerPage, int totalItems)

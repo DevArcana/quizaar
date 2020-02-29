@@ -1,19 +1,14 @@
-﻿namespace Application.Common.Queries
+﻿using Application.Common.ViewModels;
+using MediatR;
+
+namespace Application.Common.Queries
 {
-    public abstract class PaginatedQuery
+    public abstract class PaginatedQuery<T> : IRequest<PaginatedList<T>>
     {
-        public int Page { get; }
-        public int ItemsPerPage { get; }
+        public int Page { get; set; }
+        public int ItemsPerPage { get; set; }
 
-        public string SortQuery { get; }
-        public string Search { get; }
-
-        protected PaginatedQuery(int page, int itemsPerPage, string sortQuery, string search)
-        {
-            Page = page;
-            ItemsPerPage = itemsPerPage;
-            SortQuery = sortQuery;
-            Search = search;
-        }
+        public string Sort { get; set; }
+        public string Search { get; set; }
     }
 }
