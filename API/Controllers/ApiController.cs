@@ -46,7 +46,7 @@ namespace API.Controllers
             {
                 var result = await Mediator.Send(command);
 
-                return result.Succeeded ? Ok(result) : HandleError(result.Error);
+                return result.Succeeded ? Ok(result.Value) : HandleError(result.Error);
             }
             catch (ValidationException exception)
             {

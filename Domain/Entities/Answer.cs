@@ -11,6 +11,7 @@ namespace Domain.Entities
         public string Content { get; }
 
         public virtual Question Question { get; set; }
+        public long QuestionId { get; set; }
 
         private Answer()
         {

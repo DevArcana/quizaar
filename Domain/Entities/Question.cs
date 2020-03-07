@@ -16,6 +16,7 @@ namespace Domain.Entities
         public IEnumerable<Answer> IncorrectAnswers => Answers.Where(x => !x.IsCorrect);
 
         public virtual Category Category { get; set; }
+        public long CategoryId { get; set; }
 
         private Question()
         {
